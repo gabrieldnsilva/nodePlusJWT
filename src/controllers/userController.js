@@ -29,10 +29,16 @@ class UserController {
 			}
 
 			const hashedPassword = await hash(password);
+			// defesa extra: garantir que o hash é diferente da senha original
+			if (hashedPassword === password) {
+				return res
+					.status(500)
+					.json({ message: "Falha ao hash da senha." });
+			}
+
 			const newUser = await userRepository.create({
 				email,
-				password,
-				hashedPassword,
+				password: hashedPassword, // persist ONLY the hash
 			});
 
 			return res
@@ -62,7 +68,21 @@ class UserController {
 					.json({ message: "Credenciais inválidas." });
 			}
 
-			const validPassword = await verify(password, user.password);
+			const isHashed =
+				typeof user.password === "string" &&
+				user.password.startsWith("$2");
+			let validPassword = false;
+
+			if (isHashed) {
+				validPassword = await verify(password, user.password);
+			} else {
+				validPassword = password === user.password;
+				if (validPassword) {
+					const newHash = await hash(password);
+					await userRepository.updatePasswordById(user.id, newHash);
+				}
+			}
+
 			if (!validPassword) {
 				return res
 					.status(401)
