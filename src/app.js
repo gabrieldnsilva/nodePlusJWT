@@ -13,7 +13,7 @@ app.get("/health", (_req, res) => {
 });
 
 // Importar e usar as rotas de usuários
-const userRoutes = require("./routes/userRoutes");
+const userRoutes = require("./routes/router.js");
 app.use("/api/usuarios", userRoutes);
 
 app.listen(PORT, () => {
