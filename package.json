@@ -8,8 +8,8 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage --verbose",
-    "test:watch": "jest --watch",
+    "test": "rm -f src/db/test.sqlite && jest --coverage --verbose",
+     "test:watch": "rm -f src/db/test.sqlite && jest --watch",
     "start": "node src/app.js",
     "dev": "nodemon src/app.js"
   },
