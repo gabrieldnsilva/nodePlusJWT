@@ -16,6 +16,11 @@ app.get("/health", (_req, res) => {
 const userRoutes = require("./routes/router.js");
 app.use("/api/usuarios", userRoutes);
 
-app.listen(PORT, () => {
-	console.log(`Servidor rodando na porta http://localhost:${PORT}`);
-});
+// Exporta app sem iniciar servidor (para testes)
+if (require.main === module) {
+	app.listen(PORT, () => {
+		console.log(`Servidor rodando na porta http://localhost:${PORT}`);
+	});
+}
+
+module.exports = app;

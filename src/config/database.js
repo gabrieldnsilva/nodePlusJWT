@@ -6,13 +6,26 @@ let dbInstance = null;
 function getConnectionDB() {
 	if (dbInstance) return dbInstance;
 
-	const dbPath = path.resolve(__dirname, "../db/database.sqlite");
+	// Usa DB de teste se NODE_ENV=test
+	const dbName =
+		process.env.NODE_ENV === "test" ? "test.sqlite" : "database.sqlite";
+	const dbPath = path.resolve(__dirname, `../db/${dbName}`);
+
 	dbInstance = new sqlite3.Database(dbPath, (err) => {
 		if (err) console.error("Erro ao conectar ao SQLite:", err.message);
-		else console.log("[SQLite] Conectado em:", dbPath);
+		else if (process.env.NODE_ENV !== "test") {
+			console.log("[SQLite] Conectado em:", dbPath);
+		}
 	});
 
 	return dbInstance;
 }
 
-module.exports = { getConnectionDB };
+function resetConnection() {
+	if (dbInstance) {
+		dbInstance.close();
+		dbInstance = null;
+	}
+}
+
+module.exports = { getConnectionDB, resetConnection };
